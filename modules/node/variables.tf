@@ -83,6 +83,11 @@ variable "floating_ip_pool" {
   type = string
 }
 
+variable "fixed_registration_address" {
+  type = string
+  default = null
+}
+
 variable "user_data" {
   type = string
 }

@@ -24,6 +24,11 @@ output "subnet_id" {
   description = "Nodes Subnet ID"
 }
 
+output "loadbalancer_floating_ip" {
+  value       = var.enable_loadbalancer ? module.loadbalancer[0].floating_ip : ""
+  description = "Loadbalancer floating IP"
+}
+
 output "kubernetes_config" {
   value = var.output_kubernetes_config ? {
     host                   = module.host[0].stdout

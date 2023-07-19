@@ -72,6 +72,7 @@ module "server" {
   secgroup_id            = module.secgroup.secgroup_id
   server_affinity        = var.server_group_affinity
   assign_floating_ip     = "true"
+  fixed_registration_address = var.enable_loadbalancer ? module.loadbalancer[0].floating_ip : null
   config_drive           = var.nodes_config_drive
   floating_ip_pool       = var.public_net_name
   user_data              = var.user_data_file != null ? file(var.user_data_file) : null
@@ -90,6 +91,16 @@ module "server" {
   do_upgrade             = var.do_upgrade
   proxy_url              = var.proxy_url
   no_proxy               = concat(["localhost","127.0.0.1","169.254.169.254","127.0.0.0/8","169.254.0.0/16","10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"], var.no_proxy)
+}
+
+module "loadbalancer" {
+  source           = "./modules/loadbalancer"
+  name_prefix      = "${var.cluster_name}-loadbalancer"
+  count            = var.enable_loadbalancer ? 1 : 0
+  subnet_id        = module.network.nodes_subnet_id
+  secgroup_id      = module.secgroup.secgroup_id
+  floating_network = var.public_net_name
+  lb_members       = module.server.nodes
 }
 
 resource "local_file" "tmpdirfile" {
